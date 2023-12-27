@@ -10,7 +10,7 @@ import java.util.List;
 @Document("Restaurant")
 public class Restaurant {
 
-    @org.springframework.data.annotation.Id
+    @Id
     private String Id;
     private String name;
     private List<Menu> menu;

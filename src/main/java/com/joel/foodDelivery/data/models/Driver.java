@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("Driver")
 public class Driver {
 
-    @org.springframework.data.annotation.Id
+    @Id
     private String Id;
     private String name;
 }
