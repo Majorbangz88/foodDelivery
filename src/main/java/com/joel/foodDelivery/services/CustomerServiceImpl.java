@@ -25,7 +25,7 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     private void validateEmailAndUsername(String email, String username) {
-        Optional<Customer> customer = customerRepository.FindCustomerByEmailAndUsername(email, username);
+        Optional<Customer> customer = customerRepository.findByEmailAndUsername(email, username);
         if (customer.isPresent())
             throw new EmailAndUsernameTakenException("Email or username taken");
     }
