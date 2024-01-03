@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -17,5 +18,6 @@ public class Order {
     private Driver driver;
     private List<Menu> menu;
     private String status;
+    private LocalDateTime timeStamp;
 }
 
