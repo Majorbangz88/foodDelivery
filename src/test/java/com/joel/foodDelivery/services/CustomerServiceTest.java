@@ -1,10 +1,7 @@
 package com.joel.foodDelivery.services;
 
 import com.joel.foodDelivery.data.models.*;
-import com.joel.foodDelivery.dtos.requests.CustomerRegistrationRequest;
-import com.joel.foodDelivery.dtos.requests.LoginRequest;
-import com.joel.foodDelivery.dtos.requests.PlaceOrderRequest;
-import com.joel.foodDelivery.dtos.requests.UpdateOrderRequest;
+import com.joel.foodDelivery.dtos.requests.*;
 import com.joel.foodDelivery.exceptions.EmailAndUsernameTakenException;
 import com.joel.foodDelivery.exceptions.OrderNotExistException;
 import com.joel.foodDelivery.exceptions.UserNotFoundException;
@@ -27,11 +24,17 @@ class CustomerServiceTest {
     private CustomerService customerService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private FeedbackService feedbackService;
+    @Autowired
+    NotificationService notificationService;
 
     @BeforeEach
     public void setup() {
         customerService.deleteAll();
         orderService.deleteAll();
+        feedbackService.deleteAll();
+        notificationService.deleteAll();
     }
 
     @Test
@@ -112,181 +115,89 @@ class CustomerServiceTest {
         registrationRequest.setEmail("johnlegend@gmail.com");
         registrationRequest.setUsername("username");
         registrationRequest.setPassword("password");
-        customerService.registerCustomer(registrationRequest);
+        Customer customer = customerService.registerCustomer(registrationRequest);
         assertThat(customerService.count(), is(1L));
 
-        Customer loginStatus = customerService.setLock();
-        assertTrue(loginStatus.isLocked());
-    }
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("username");
+        loginRequest.setPassword("password");
+        Customer customer1 = customerService.isLocked(loginRequest);
+        assertFalse(customer1.isLocked());
+        Customer customer2 = customerService.setLock(customer1.getUsername());
 
-//    @Test
-//    public void testThatCustomerCanPlaceOrder() {
-//        CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest();
-//        registrationRequest.setEmail("johnlegend@gmail.com");
-//        registrationRequest.setUsername("username");
-//        registrationRequest.setPassword("password");
-//        customerService.registerCustomer(registrationRequest);
-//        assertThat(customerService.count(), is(1L));
-//
-//        LoginRequest loginRequest = new LoginRequest();
-//        loginRequest.setUsername("username");
-//        loginRequest.setPassword("password");
-//        Customer customer = customerService.isLocked(loginRequest);
-//        assertFalse(customer.isLocked());
-//
-//        PlaceOrderRequest orderRequest = new PlaceOrderRequest();
-//        customer.setUsername(registrationRequest.getUsername());
-//        customer.setEmail(registrationRequest.getEmail());
-//        orderRequest.setCustomer(customer);
-//        orderRequest.setTimeStamp(LocalDateTime.now());
-//        orderRequest.setStatus("Available");
-//        Restaurant restaurant = new Restaurant();
-//        restaurant.setName("Food 0'clock");
-//        restaurant.setMenu(List.of(new Menu("1", "Rice", 500.00, true)));
-//        orderRequest.setRestaurant(restaurant);
-//        Driver driver = new Driver();
-//        driver.setName("Jake");
-//        orderRequest.setDriver(driver);
-//        customerService.createOrder(orderRequest);
-//        assertThat(orderService.count(), is(1L));
-//    }
+        assertTrue(customer2.isLocked());
+    }
 
     @Test
-    public void testCustomerCanPlaceOrder() {
-        Customer customer = registerCustomer();
-
-        assertFalse(customer.isLocked());
-
-        PlaceOrderRequest orderRequest = createOrderRequest(customer);
-        customerService.createOrder(orderRequest);
-
-        assertThat(customerService.count(), is(1L));
-        assertThat(orderService.count(), is(1L));
-    }
-
-    private Customer registerCustomer() {
+    public void testThatCustomerCanPlaceOrder() {
         CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest();
         registrationRequest.setEmail("johnlegend@gmail.com");
         registrationRequest.setUsername("username");
         registrationRequest.setPassword("password");
         customerService.registerCustomer(registrationRequest);
-        return customerService.findByUsername("username").orElseThrow();
-    }
+        assertThat(customerService.count(), is(1L));
 
-    private PlaceOrderRequest createOrderRequest(Customer customer) {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("username");
+        loginRequest.setPassword("password");
+        Customer customer = customerService.isLocked(loginRequest);
+        assertFalse(customer.isLocked());
+
         PlaceOrderRequest orderRequest = new PlaceOrderRequest();
-        orderRequest.setCustomer(customer);
+        orderRequest.setUsername(registrationRequest.getUsername());
+        orderRequest.setRestaurantName("Food 0'clock");
+        orderRequest.setEmail(registrationRequest.getEmail());
+        orderRequest.setMenu("Rice");
+        orderRequest.setDriver("Jake");
+        orderRequest.setDriverPhone("07023536754");
+        orderRequest.setStatus(Status.AWAITING_DELIVERY);
         orderRequest.setTimeStamp(LocalDateTime.now());
-        orderRequest.setStatus("Available");
 
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("Food 0'clock");
-        restaurant.setMenu(List.of(new Menu("1", "Rice", 500.00, true)));
-        orderRequest.setRestaurant(restaurant);
+        PlaceOrderResponse response = customerService.createOrder(orderRequest);
+        notificationService.sendNotification(orderRequest);
 
-        Driver driver = new Driver();
-        driver.setName("Jake");
-        orderRequest.setDriver(driver);
-
-        return orderRequest;
+        assertNotNull(response);
+        assertThat(orderService.count(), is(1L));
     }
 
+    @Test
+    public void testThatOrderCanBeCanceled() {
+        CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest();
+        registrationRequest.setEmail("johnlegend@gmail.com");
+        registrationRequest.setUsername("username");
+        registrationRequest.setPassword("password");
+        customerService.registerCustomer(registrationRequest);
+        assertThat(customerService.count(), is(1L));
 
-//    @Test
-//    public void testThatOrderCanBeUpdated() {
-//        CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest();
-//        registrationRequest.setEmail("johnlegend@gmail.com");
-//        registrationRequest.setUsername("username");
-//        registrationRequest.setPassword("password");
-//        customerService.registerCustomer(registrationRequest);
-//        assertThat(customerService.count(), is(1L));
-//
-//        LoginRequest loginRequest = new LoginRequest();
-//        loginRequest.setUsername("username");
-//        loginRequest.setPassword("password");
-//        Customer customer = customerService.isLocked(loginRequest);
-//        assertFalse(customer.isLocked());
-//
-//        PlaceOrderRequest orderRequest = new PlaceOrderRequest();
-//        customer.setUsername(registrationRequest.getUsername());
-//        customer.setEmail(registrationRequest.getEmail());
-//        orderRequest.setCustomer(customer);
-//        orderRequest.setTimeStamp(LocalDateTime.now());
-//        orderRequest.setStatus("Available");
-//        Restaurant restaurant = new Restaurant();
-//        restaurant.setName("Food 0'clock");
-//        restaurant.setMenu(List.of(new Menu("1", "Rice", 500.00, true)));
-//        orderRequest.setRestaurant(restaurant);
-//        Driver driver = new Driver();
-//        driver.setName("Jake");
-//        orderRequest.setDriver(driver);
-//        customerService.createOrder(orderRequest);
-////        assertThat(orderService.count(), is(1L));
-//
-//        UpdateOrderRequest updateRequest = new UpdateOrderRequest();
-//        customer.setUsername(registrationRequest.getUsername());
-//        customer.setEmail(registrationRequest.getEmail());
-//        updateRequest.setCustomer(customer);
-//        updateRequest.setTimeStamp(LocalDateTime.now());
-//        updateRequest.setStatus("Available");
-////        Restaurant restaurant = new Restaurant();
-//        restaurant.setName("Food Bank");
-//        restaurant.setMenu(List.of(new Menu("1", "Beans", 500.00, true)));
-//        updateRequest.setRestaurant(restaurant);
-////        Driver driver = new Driver();
-//        driver.setName("Jade");
-//        updateRequest.setDriver(driver);
-//        customerService.updateOrder(updateRequest);
-//        assertThat(orderService.count(), is(1L));
-//    }
-@Test
-public void testOrderCanBeUpdated() {
-    Customer customer = registerCustomerAndPlaceOrder();
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("username");
+        loginRequest.setPassword("password");
+        Customer customer = customerService.isLocked(loginRequest);
+        assertFalse(customer.isLocked());
 
-    assertFalse(customer.isLocked());
+        PlaceOrderRequest orderRequest = new PlaceOrderRequest();
+        orderRequest.setUsername(registrationRequest.getUsername());
+        orderRequest.setEmail(registrationRequest.getEmail());
+        orderRequest.setRestaurantName("Dolphins");
+        orderRequest.setMenu("Rice & Beans");
+        orderRequest.setDriver("Jade");
+        orderRequest.setDriverPhone("08034239899");
+        orderRequest.setStatus(Status.AWAITING_DELIVERY);
+        orderRequest.setTimeStamp(LocalDateTime.now());
 
-    UpdateOrderRequest updateRequest = createUpdateOrderRequest(customer);
-    customerService.updateOrder(updateRequest);
+        PlaceOrderResponse response = customerService.createOrder(orderRequest);
+        assertNotNull(response);
 
-    assertThat(customerService.count(), is(1L));
-    assertThat(orderService.count(), is(1L));
-}
-
-    private Customer registerCustomerAndPlaceOrder() {
-        Customer customer = registerCustomer();
-
-
-        // Order Placement
-        PlaceOrderRequest orderRequest = createOrderRequest(customer);
-        customerService.createOrder(orderRequest);
         assertThat(orderService.count(), is(1L));
 
-        return customer;
-    }
+        Order order = customerService.cancelOrder(orderRequest);
 
-    private UpdateOrderRequest createUpdateOrderRequest(Customer customer) {
-        // Order Update Request
-        UpdateOrderRequest updateRequest = new UpdateOrderRequest();
-        updateRequest.setCustomer(customer);
-        updateRequest.setTimeStamp(LocalDateTime.now());
-        updateRequest.setStatus("Available");
-
-        // Updated Restaurant and Driver details
-        Restaurant updatedRestaurant = new Restaurant();
-        updatedRestaurant.setName("Food Bank");
-        updatedRestaurant.setMenu(List.of(new Menu("1", "Beans", 500.00, true)));
-        updateRequest.setRestaurant(updatedRestaurant);
-
-        Driver updatedDriver = new Driver();
-        updatedDriver.setName("Jade");
-        updateRequest.setDriver(updatedDriver);
-
-        return updateRequest;
+        assertThat(order.getStatus(), is(Status.CANCELED));
     }
 
 
     @Test
-    public void testThatExceptionIsThrownWhen_UpdateAttemptIsMade_ButUpdateNotFound() {
+    public void testThatExceptionIsThrownWhen_UpdateAttemptIsMade_ButOrderNotFound() {
         CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest();
         registrationRequest.setEmail("johnlegend@gmail.com");
         registrationRequest.setUsername("username");
@@ -301,24 +212,17 @@ public void testOrderCanBeUpdated() {
         assertFalse(customer.isLocked());
 
         UpdateOrderRequest updateRequest = new UpdateOrderRequest();
-        customer.setUsername(registrationRequest.getUsername());
-        customer.setEmail(registrationRequest.getEmail());
-        updateRequest.setCustomer(customer);
+        updateRequest.setName(registrationRequest.getUsername());
+        updateRequest.setStatus(Status.DELIVERED);
         updateRequest.setTimeStamp(LocalDateTime.now());
-        updateRequest.setStatus("Available");
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("Food Bank");
-        restaurant.setMenu(List.of(new Menu("1", "Beans", 500.00, true)));
-        updateRequest.setRestaurant(restaurant);
-        Driver driver = new Driver();
-        driver.setName("Jade");
-        updateRequest.setDriver(driver);
+//        UpdateOrderResponse response = customerService.updateOrder(updateRequest);
 
+//        assertNotNull(response);
         assertThrows(OrderNotExistException.class, ()-> customerService.updateOrder(updateRequest));
     }
 
     @Test
-    public void testThatCustomerCanTrackOrder() {
+    public void testThatCustomerCanProvideFeedback() {
         CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest();
         registrationRequest.setEmail("johnlegend@gmail.com");
         registrationRequest.setUsername("username");
@@ -333,19 +237,81 @@ public void testOrderCanBeUpdated() {
         assertFalse(customer.isLocked());
 
         PlaceOrderRequest orderRequest = new PlaceOrderRequest();
-        customer.setUsername(registrationRequest.getUsername());
-        customer.setEmail(registrationRequest.getEmail());
-        orderRequest.setCustomer(customer);
+        orderRequest.setUsername(registrationRequest.getUsername());
+        orderRequest.setRestaurantName("Food 0'clock");
+        orderRequest.setEmail(registrationRequest.getEmail());
+        orderRequest.setMenu("Rice");
+        orderRequest.setDriver("Jake");
+        orderRequest.setStatus(Status.AWAITING_DELIVERY);
+        orderRequest.setDriverPhone("07023536754");
         orderRequest.setTimeStamp(LocalDateTime.now());
-        orderRequest.setStatus("Available");
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("Food 0'clock");
-        restaurant.setMenu(List.of(new Menu("1", "Rice", 500.00, true)));
-        orderRequest.setRestaurant(restaurant);
-        Driver driver = new Driver();
-        driver.setName("Jake");
-        orderRequest.setDriver(driver);
-        customerService.createOrder(orderRequest);
+
+        PlaceOrderResponse response = customerService.createOrder(orderRequest);
+        notificationService.sendNotification(orderRequest);
+        assertNotNull(response);
         assertThat(orderService.count(), is(1L));
+
+        UpdateOrderRequest updateOrderRequest = new UpdateOrderRequest();
+        updateOrderRequest.setName(registrationRequest.getUsername());
+        updateOrderRequest.setStatus(Status.DELIVERED);
+        updateOrderRequest.setTimeStamp(LocalDateTime.now());
+
+        Order order = customerService.updateOrder(updateOrderRequest);
+        assertThat(order.getStatus(), is(Status.DELIVERED));
+
+        FeedbackRequest feedbackRequest = new FeedbackRequest();
+        feedbackRequest.setCustomer(registrationRequest.getUsername());
+        feedbackRequest.setRestaurant(orderRequest.getRestaurantName());
+        feedbackRequest.setDriver(orderRequest.getDriver());
+        feedbackRequest.setRating(10);
+        feedbackRequest.setComment("Timely delivery plus tasty food! Awesome experience");
+        FeedbackResponse response1 = feedbackService.provideFeedback(feedbackRequest);
+
+        assertNotNull(response1);
+        assertThat(feedbackService.count(), is(1L));
+    }
+
+    @Test
+    public void testThatCustomerCanFindAllOrderHistory() {
+        CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest();
+        registrationRequest.setEmail("johnlegend@gmail.com");
+        registrationRequest.setUsername("username");
+        registrationRequest.setPassword("password");
+        customerService.registerCustomer(registrationRequest);
+        assertThat(customerService.count(), is(1L));
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("username");
+        loginRequest.setPassword("password");
+        Customer customer = customerService.isLocked(loginRequest);
+        assertFalse(customer.isLocked());
+
+        PlaceOrderRequest orderRequest = new PlaceOrderRequest();
+        orderRequest.setUsername(registrationRequest.getUsername());
+        orderRequest.setRestaurantName("Food 0'clock");
+        orderRequest.setEmail(registrationRequest.getEmail());
+        orderRequest.setMenu("Rice");
+        orderRequest.setDriver("Jake");
+        orderRequest.setStatus(Status.AWAITING_DELIVERY);
+        orderRequest.setDriverPhone("07023536754");
+        orderRequest.setTimeStamp(LocalDateTime.now());
+
+        PlaceOrderResponse response = customerService.createOrder(orderRequest);
+        notificationService.sendNotification(orderRequest);
+        assertNotNull(response);
+        assertThat(orderService.count(), is(1L));
+
+        UpdateOrderRequest updateOrderRequest = new UpdateOrderRequest();
+        updateOrderRequest.setName(registrationRequest.getUsername());
+        updateOrderRequest.setStatus(Status.DELIVERED);
+        updateOrderRequest.setTimeStamp(LocalDateTime.now());
+
+        Order order = customerService.updateOrder(updateOrderRequest);
+        assertThat(order.getStatus(), is(Status.DELIVERED));
+
+        List<Order> allOrders = customerService.findAllTransactionHistory();
+
+        assertNotNull(allOrders);
+//        assertThat(allOrders).isNotNull();
     }
 }

@@ -11,7 +11,10 @@ import java.util.List;
 public class Restaurant {
 
     @Id
-    private String Id;
+    private String id;
     private String name;
+    private String email;
+    private String password;
+    private boolean isLocked;
     private List<Menu> menu;
 }

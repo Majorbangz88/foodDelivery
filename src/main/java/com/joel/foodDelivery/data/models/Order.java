@@ -12,12 +12,13 @@ import java.util.List;
 public class Order {
 
     @Id
-    private String Id;
-    private Customer customer;
-    private Restaurant restaurant;
+    private String id;
+    private String customerName;
+    private String email;
+    private String restaurantName;
     private Driver driver;
-    private List<Menu> menu;
-    private String status;
+    private Menu menu;
+    private Status status;
     private LocalDateTime timeStamp;
 }
 

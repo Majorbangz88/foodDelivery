@@ -3,34 +3,41 @@ package com.joel.foodDelivery.services;
 import com.joel.foodDelivery.data.models.Customer;
 import com.joel.foodDelivery.data.models.Order;
 import com.joel.foodDelivery.data.repositories.CustomerRepository;
-import com.joel.foodDelivery.dtos.requests.CustomerRegistrationRequest;
-import com.joel.foodDelivery.dtos.requests.LoginRequest;
-import com.joel.foodDelivery.dtos.requests.PlaceOrderRequest;
-import com.joel.foodDelivery.dtos.requests.UpdateOrderRequest;
+import com.joel.foodDelivery.dtos.requests.*;
+import com.joel.foodDelivery.exceptions.CustomerNotfoundException;
 import com.joel.foodDelivery.exceptions.EmailAndUsernameTakenException;
 import com.joel.foodDelivery.exceptions.UserNotFoundException;
 import com.joel.foodDelivery.exceptions.NullUsernameAndPasswordException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.joel.foodDelivery.java.utils.Mapper.map;
 
 @Service
+@Component
 public class CustomerServiceImpl implements CustomerService{
 
     @Autowired
     private CustomerRepository customerRepository;
-
     @Autowired
     private OrderService orderService;
+
+//    @Autowired
+//    public void setUp(OrderService orderService){
+//          this.orderService = orderService;
+//    }
+
     @Override
-    public void registerCustomer(CustomerRegistrationRequest registrationRequest) {
+    public Customer registerCustomer(CustomerRegistrationRequest registrationRequest) {
         validateIsNotNullEmailOrPassword(registrationRequest);
         validateEmailAndUsername(registrationRequest.getEmail(), registrationRequest.getUsername());
         Customer customer = map(registrationRequest);
         customerRepository.save(customer);
+        return customer;
     }
 
     private void validateIsNotNullEmailOrPassword(CustomerRegistrationRequest registrationRequest) {
@@ -73,15 +80,20 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public Customer setLock() {
-        Customer customer = new Customer();
-        customer.setLocked(true);
-        customerRepository.save(customer);
-        return customer;
+    public Customer setLock(String name) {
+        Optional<Customer> optionalCustomer = customerRepository.findByUsername(name);
+//        optionalCustomer.ifPresent(customer -> customer.setLocked(true));
+        if (optionalCustomer.isPresent()){
+            Customer customer = optionalCustomer.get();
+            customer.setLocked(true);
+            customerRepository.save(customer);
+            return customer;
+        }
+        throw new CustomerNotfoundException("not found");
     }
 
     @Override
-    public Order createOrder(PlaceOrderRequest orderRequest) {
+    public PlaceOrderResponse createOrder(PlaceOrderRequest orderRequest) {
         return orderService.createOrder(orderRequest);
     }
 
@@ -93,6 +105,16 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public Optional<Customer> findByUsername(String username) {
         return customerRepository.findByUsername(username);
+    }
+
+    @Override
+    public Order cancelOrder(PlaceOrderRequest orderRequest) {
+        return orderService.cancelOrder(orderRequest);
+    }
+
+    @Override
+    public List<Order> findAllTransactionHistory() {
+        return orderService.displayOrderHistory();
     }
 
     private void validateIsNOTNullUsernameOrPassword(LoginRequest loginRequest) {

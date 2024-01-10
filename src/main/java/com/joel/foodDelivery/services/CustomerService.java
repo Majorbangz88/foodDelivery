@@ -2,16 +2,14 @@ package com.joel.foodDelivery.services;
 
 import com.joel.foodDelivery.data.models.Customer;
 import com.joel.foodDelivery.data.models.Order;
-import com.joel.foodDelivery.dtos.requests.CustomerRegistrationRequest;
-import com.joel.foodDelivery.dtos.requests.LoginRequest;
-import com.joel.foodDelivery.dtos.requests.PlaceOrderRequest;
-import com.joel.foodDelivery.dtos.requests.UpdateOrderRequest;
+import com.joel.foodDelivery.dtos.requests.*;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CustomerService {
 
-    public void registerCustomer(CustomerRegistrationRequest registrationRequest);
+    Customer registerCustomer(CustomerRegistrationRequest registrationRequest);
 
     Long count();
 
@@ -19,11 +17,15 @@ public interface CustomerService {
 
     Customer isLocked(LoginRequest loginRequest);
 
-    Customer setLock();
+    Customer setLock(String name);
 
-    Order createOrder(PlaceOrderRequest orderRequest);
+    PlaceOrderResponse createOrder(PlaceOrderRequest orderRequest);
 
     Order updateOrder(UpdateOrderRequest updateRequest);
 
     Optional<Customer> findByUsername(String username);
+
+    Order cancelOrder(PlaceOrderRequest orderRequest);
+
+    List<Order> findAllTransactionHistory();
 }

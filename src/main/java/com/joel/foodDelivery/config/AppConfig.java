@@ -11,10 +11,10 @@ import org.springframework.web.client.RestTemplate;
 @Getter
 public class AppConfig {
 
-    @Value("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")
+    @Value("${brevo.api.key}")
     private String mailApiKey;
 
-    @Value("https://api.brevo.com/v3/smtp/email")
+    @Value("${brevo.api.url}")
     private String mailServiceUrl;
 
     @Bean

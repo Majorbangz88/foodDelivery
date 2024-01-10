@@ -10,6 +10,7 @@ public class Mapper {
         customer.setEmail(registrationRequest.getEmail());
         customer.setUsername(registrationRequest.getUsername());
         customer.setPassword(registrationRequest.getPassword());
+        customer.setLocked(true);
         return customer;
     }
 }

@@ -8,11 +8,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("Feedback")
 public class Feedback {
 
-    @org.springframework.data.annotation.Id
+    @Id
     private String Id;
-    private Customer customer;
-    private Restaurant restaurant;
-    private Driver driver;
+    private String customer;
+    private String restaurant;
+    private String driver;
     private int rating;
     private String comment;
 }

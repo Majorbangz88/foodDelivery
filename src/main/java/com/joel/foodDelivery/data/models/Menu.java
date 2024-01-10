@@ -15,6 +15,7 @@ public class Menu {
 
     @Id
     private String Id;
+    private String restaurant;
     private String itemName;
     private double price;
     private boolean availability;

@@ -11,4 +11,5 @@ public class Driver {
     @Id
     private String Id;
     private String name;
+    private String phoneNumber;
 }

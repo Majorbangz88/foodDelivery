@@ -6,5 +6,10 @@ import lombok.Getter;
 public enum Status {
 
     AVAILABLE,
-    UNAVAILABLE;
+    UNAVAILABLE,
+    CANCELED,
+    DELIVERED,
+    AWAITING_DELIVERY,
+    OLD,
+    NEW;
 }
