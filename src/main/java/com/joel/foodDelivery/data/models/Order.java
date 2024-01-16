@@ -17,7 +17,7 @@ public class Order {
     private String email;
     private String restaurantName;
     private Driver driver;
-    private Menu menu;
+    private List<Menu> menu;
     private Status status;
     private LocalDateTime timeStamp;
 }

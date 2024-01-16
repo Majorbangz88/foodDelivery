@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,7 +12,7 @@ public class Notification {
 
     private String sender;
     private String message;
-    private String menu;
+    private List<String> menu;
     private String driver;
     private String restaurant;
     private Status status;

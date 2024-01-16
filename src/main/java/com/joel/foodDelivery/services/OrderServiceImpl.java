@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +49,13 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public PlaceOrderResponse createOrder(PlaceOrderRequest orderRequest) {
         Customer customer = getCustomer(orderRequest.getUsername());
-        Menu menu = getMenu(orderRequest.getMenu());
+        List<String> allMenuOrders = orderRequest.getMenu();
+        List<Menu> allMenu = new ArrayList<>();
+        allMenuOrders.forEach((order) -> {
+            Menu menu = getMenu(order);
+            allMenu.add(menu);
+        });
+
         Restaurant restaurant = getRestaurant(orderRequest.getRestaurantName());
         Driver driver = getDriver(orderRequest.getDriverPhone());
 
@@ -58,7 +65,7 @@ public class OrderServiceImpl implements OrderService{
         newOrder.setEmail(customer.getEmail());
         newOrder.setRestaurantName(restaurant.getName());
         newOrder.setDriver(driver);
-        newOrder.setMenu(menu);
+        newOrder.setMenu(allMenu);
         newOrder.setTimeStamp(orderRequest.getTimeStamp());
         newOrder.setStatus(orderRequest.getStatus());
 
@@ -68,7 +75,7 @@ public class OrderServiceImpl implements OrderService{
         response.setCustomer(newOrder.getCustomerName());
         response.setRestaurant(newOrder.getRestaurantName());
         response.setEmail(newOrder.getEmail());
-        response.setMenu(newOrder.getMenu().getItemName());
+        response.setMenu(orderRequest.getMenu());
         response.setDriver(newOrder.getDriver().getName());
         response.setDriverPhone(newOrder.getDriver().getPhoneNumber());
         response.setTimeStamp(newOrder.getTimeStamp());

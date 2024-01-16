@@ -147,7 +147,7 @@ class CustomerServiceTest {
         orderRequest.setUsername(registrationRequest.getUsername());
         orderRequest.setRestaurantName("Food 0'clock");
         orderRequest.setEmail(registrationRequest.getEmail());
-        orderRequest.setMenu("Rice");
+        orderRequest.setMenu(List.of("Rice", "Abacha n'akpaka"));
         orderRequest.setDriver("Jake");
         orderRequest.setDriverPhone("07023536754");
         orderRequest.setStatus(Status.AWAITING_DELIVERY);
@@ -179,7 +179,7 @@ class CustomerServiceTest {
         orderRequest.setUsername(registrationRequest.getUsername());
         orderRequest.setEmail(registrationRequest.getEmail());
         orderRequest.setRestaurantName("Dolphins");
-        orderRequest.setMenu("Rice & Beans");
+        orderRequest.setMenu(List.of("Rice & Beans"));
         orderRequest.setDriver("Jade");
         orderRequest.setDriverPhone("08034239899");
         orderRequest.setStatus(Status.AWAITING_DELIVERY);
@@ -240,7 +240,7 @@ class CustomerServiceTest {
         orderRequest.setUsername(registrationRequest.getUsername());
         orderRequest.setRestaurantName("Food 0'clock");
         orderRequest.setEmail(registrationRequest.getEmail());
-        orderRequest.setMenu("Rice");
+        orderRequest.setMenu(List.of("Rice"));
         orderRequest.setDriver("Jake");
         orderRequest.setStatus(Status.AWAITING_DELIVERY);
         orderRequest.setDriverPhone("07023536754");
@@ -290,7 +290,7 @@ class CustomerServiceTest {
         orderRequest.setUsername(registrationRequest.getUsername());
         orderRequest.setRestaurantName("Food 0'clock");
         orderRequest.setEmail(registrationRequest.getEmail());
-        orderRequest.setMenu("Rice");
+        orderRequest.setMenu(List.of("Rice"));
         orderRequest.setDriver("Jake");
         orderRequest.setStatus(Status.AWAITING_DELIVERY);
         orderRequest.setDriverPhone("07023536754");
@@ -334,7 +334,7 @@ class CustomerServiceTest {
         orderRequest.setUsername(customer.getUsername());
         orderRequest.setRestaurantName("Food 0'clock");
         orderRequest.setEmail(customer.getEmail());
-        orderRequest.setMenu("Rice");
+        orderRequest.setMenu(List.of("Rice", "Abacha n'aka"));
         orderRequest.setDriver("Jake");
         orderRequest.setStatus(Status.AWAITING_DELIVERY);
         orderRequest.setDriverPhone("07023536754");
