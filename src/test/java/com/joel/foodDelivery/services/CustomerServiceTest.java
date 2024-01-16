@@ -75,7 +75,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("username");
         loginRequest.setPassword("password");
-        Customer customer = customerService.isLocked(loginRequest);
+        Customer customer = customerService.unlock(loginRequest);
         assertFalse(customer.isLocked());
     }
 
@@ -91,7 +91,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("user_name");
         loginRequest.setPassword("password");
-        assertThrows(UserNotFoundException.class, ()-> customerService.isLocked(loginRequest));
+        assertThrows(UserNotFoundException.class, ()-> customerService.unlock(loginRequest));
     }
 
     @Test
@@ -106,7 +106,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("");
         loginRequest.setPassword("");
-        assertThrows(UserNotFoundException.class, ()-> customerService.isLocked(loginRequest));
+        assertThrows(UserNotFoundException.class, ()-> customerService.unlock(loginRequest));
     }
 
     @Test
@@ -121,7 +121,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("username");
         loginRequest.setPassword("password");
-        Customer customer1 = customerService.isLocked(loginRequest);
+        Customer customer1 = customerService.unlock(loginRequest);
         assertFalse(customer1.isLocked());
         Customer customer2 = customerService.setLock(customer1.getUsername());
 
@@ -140,7 +140,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("username");
         loginRequest.setPassword("password");
-        Customer customer = customerService.isLocked(loginRequest);
+        Customer customer = customerService.unlock(loginRequest);
         assertFalse(customer.isLocked());
 
         PlaceOrderRequest orderRequest = new PlaceOrderRequest();
@@ -172,7 +172,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("username");
         loginRequest.setPassword("password");
-        Customer customer = customerService.isLocked(loginRequest);
+        Customer customer = customerService.unlock(loginRequest);
         assertFalse(customer.isLocked());
 
         PlaceOrderRequest orderRequest = new PlaceOrderRequest();
@@ -208,7 +208,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("username");
         loginRequest.setPassword("password");
-        Customer customer = customerService.isLocked(loginRequest);
+        Customer customer = customerService.unlock(loginRequest);
         assertFalse(customer.isLocked());
 
         UpdateOrderRequest updateRequest = new UpdateOrderRequest();
@@ -233,7 +233,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("username");
         loginRequest.setPassword("password");
-        Customer customer = customerService.isLocked(loginRequest);
+        Customer customer = customerService.unlock(loginRequest);
         assertFalse(customer.isLocked());
 
         PlaceOrderRequest orderRequest = new PlaceOrderRequest();
@@ -283,7 +283,7 @@ class CustomerServiceTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("username");
         loginRequest.setPassword("password");
-        Customer customer = customerService.isLocked(loginRequest);
+        Customer customer = customerService.unlock(loginRequest);
         assertFalse(customer.isLocked());
 
         PlaceOrderRequest orderRequest = new PlaceOrderRequest();
@@ -314,4 +314,34 @@ class CustomerServiceTest {
         assertNotNull(allOrders);
 //        assertThat(allOrders).isNotNull();
     }
+
+    @Test
+    public void testThatOrderTotalCanBeCalculated() {
+        CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest();
+        registrationRequest.setEmail("johnlegend@gmail.com");
+        registrationRequest.setUsername("username");
+        registrationRequest.setPassword("password");
+        customerService.registerCustomer(registrationRequest);
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("username");
+        loginRequest.setPassword("password");
+
+        Customer customer = customerService.unlock(loginRequest);
+        assertFalse(customer.isLocked());
+
+        PlaceOrderRequest orderRequest = new PlaceOrderRequest();
+        orderRequest.setUsername(customer.getUsername());
+        orderRequest.setRestaurantName("Food 0'clock");
+        orderRequest.setEmail(customer.getEmail());
+        orderRequest.setMenu("Rice");
+        orderRequest.setDriver("Jake");
+        orderRequest.setStatus(Status.AWAITING_DELIVERY);
+        orderRequest.setDriverPhone("07023536754");
+        orderRequest.setTimeStamp(LocalDateTime.now());
+
+        PlaceOrderResponse response = customerService.createOrder(orderRequest);
+    }
+
+
 }

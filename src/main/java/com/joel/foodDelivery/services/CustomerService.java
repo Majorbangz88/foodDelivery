@@ -15,7 +15,7 @@ public interface CustomerService {
 
     void deleteAll();
 
-    Customer isLocked(LoginRequest loginRequest);
+    Customer unlock(LoginRequest loginRequest);
 
     Customer setLock(String name);
 

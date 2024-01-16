@@ -12,7 +12,7 @@ public interface RestaurantService {
 
     void deleteAll();
 
-    Restaurant setLocked(Restaurant restaurant);
+    Restaurant setLocked(String name);
 
     Optional<Restaurant> findByName(String name);
 

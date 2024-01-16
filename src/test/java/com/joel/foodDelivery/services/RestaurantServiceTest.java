@@ -41,7 +41,7 @@ class RestaurantServiceTest {
 
         assertNotNull(restaurant.getId());
 
-        restaurant = restaurantService.setLocked(restaurant);
+        restaurant = restaurantService.setLocked(restaurant.getName());
         assertTrue(restaurant.isLocked());
 
         Restaurant restaurant1 = registerRestaurant("Dolphins", "dolphinseateries@gmail.com", "passwords");
@@ -57,7 +57,7 @@ class RestaurantServiceTest {
 
         assertNotNull(menuResponse1);
 
-        restaurant1 = restaurantService.setLocked(restaurant1);
+        restaurant1 = restaurantService.setLocked(restaurant1.getName());
         assertTrue(restaurant1.isLocked());
 
         Restaurant restaurant2 = registerRestaurant("Ntachi osa", "ntachiosa@gmail.com", "passworded");
@@ -73,7 +73,7 @@ class RestaurantServiceTest {
 
         assertNotNull(menuResponse2);
 
-        restaurant2  = restaurantService.setLocked(restaurant2);
+        restaurant2  = restaurantService.setLocked(restaurant2.getName());
         assertTrue(restaurant2.isLocked());
 
         assertThat(restaurantService.count(), is(3L));
@@ -86,7 +86,7 @@ class RestaurantServiceTest {
         Restaurant restaurant = registerRestaurant("Food 0'clock", "food0clock@gmail.com", "password");
         assertNotNull(restaurant.getId());
 
-        restaurant = restaurantService.setLocked(restaurant);
+        restaurant = restaurantService.setLocked(restaurant.getName());
         assertTrue(restaurant.isLocked());
 
         Restaurant restaurant1 = registerRestaurant("Dolphins", "dolphinseateries@gmail.com", "passwords");
@@ -97,7 +97,7 @@ class RestaurantServiceTest {
 
         assertThat(restaurantService.count(), is(3L));
 
-        restaurant1 = restaurantService.setLocked(restaurant1);
+        restaurant1 = restaurantService.setLocked(restaurant1.getName());
         assertTrue(restaurant1.isLocked());
 
         RestaurantRegRequest regRequest1 = new RestaurantRegRequest();
@@ -126,7 +126,7 @@ class RestaurantServiceTest {
         Restaurant restaurant = registerRestaurant("Ntachi osa", "ntachiosa@gmail.com", "passworded");
         assertThat(restaurantService.count(), is(1L));
 
-        restaurant  = restaurantService.setLocked(restaurant);
+        restaurant  = restaurantService.setLocked(restaurant.getName());
         assertTrue(restaurant.isLocked());
 
         RestaurantLoginRequest loginRequest = new RestaurantLoginRequest();
@@ -142,7 +142,7 @@ class RestaurantServiceTest {
         Restaurant restaurant = registerRestaurant("Food 0'clock", "food0clock@gmail.com", "password");
         assertNotNull(restaurant.getId());
 
-        restaurant  = restaurantService.setLocked(restaurant);
+        restaurant  = restaurantService.setLocked(restaurant.getName());
         assertTrue(restaurant.isLocked());
 
         RestaurantLoginRequest loginRequest = new RestaurantLoginRequest();
@@ -155,7 +155,7 @@ class RestaurantServiceTest {
         Restaurant restaurant1 = registerRestaurant("Dolphins", "dolphinseateries@gmail.com", "passwords");
         assertNotNull(restaurant1.getId());
 
-        restaurant1  = restaurantService.setLocked(restaurant1);
+        restaurant1  = restaurantService.setLocked(restaurant1.getName());
         assertTrue(restaurant1.isLocked());
 
         RestaurantLoginRequest loginRequest1 = new RestaurantLoginRequest();
@@ -168,7 +168,7 @@ class RestaurantServiceTest {
         Restaurant restaurant2 = registerRestaurant("Ntachi osa", "ntachiosa@gmail.com", "passworded");
         assertThat(restaurantService.count(), is(3L));
 
-        restaurant2  = restaurantService.setLocked(restaurant2);
+        restaurant2  = restaurantService.setLocked(restaurant2.getName());
         assertTrue(restaurant2.isLocked());
 
         RestaurantLoginRequest loginRequest2 = new RestaurantLoginRequest();
@@ -177,8 +177,6 @@ class RestaurantServiceTest {
 
         restaurant2 = restaurantService.unlock(loginRequest2);
         assertFalse(restaurant2.isLocked());
-
-
     }
 
 }

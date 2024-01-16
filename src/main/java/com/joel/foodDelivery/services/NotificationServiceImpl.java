@@ -4,16 +4,20 @@ import com.joel.foodDelivery.data.models.Notification;
 import com.joel.foodDelivery.data.models.Status;
 import com.joel.foodDelivery.data.repositories.NotificationRepository;
 import com.joel.foodDelivery.dtos.requests.PlaceOrderRequest;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class NotificationServiceImpl implements NotificationService{
 
-    @Autowired
-    private NotificationRepository notificationRepository;
+//    @Autowired
+    private final NotificationRepository notificationRepository;
+    private final ModelMapper modelMapper;
     @Override
     public Notification sendNotification(PlaceOrderRequest request) {
         Notification notification = new Notification();

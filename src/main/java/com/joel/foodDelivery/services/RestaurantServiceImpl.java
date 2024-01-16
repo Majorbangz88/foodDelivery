@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.joel.foodDelivery.java.utils.Mapper.map;
+
 @Service
 public class RestaurantServiceImpl implements RestaurantService{
 
@@ -25,16 +27,11 @@ public class RestaurantServiceImpl implements RestaurantService{
     public RestaurantRegResponse registerRestaurant(RestaurantRegRequest regRequest) {
 //        validateNotNullNameOrPassword(regRequest);
         validateNameAndEmail(regRequest);
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName(regRequest.getName());
-        restaurant.setEmail(regRequest.getEmail());
-        restaurant.setPassword(regRequest.getPassword());
+        Restaurant restaurant = map(regRequest);
         restaurantRepository.save(restaurant);
 
         RestaurantRegResponse response = new RestaurantRegResponse();
         response.setRestaurantId(restaurant.getId());
-
-        restaurantRepository.save(restaurant);
 
         return response;
     }
@@ -64,10 +61,15 @@ public class RestaurantServiceImpl implements RestaurantService{
     }
 
     @Override
-    public Restaurant setLocked(Restaurant restaurant) {
-        restaurant.setLocked(true);
-        restaurantRepository.save(restaurant);
-        return restaurant;
+    public Restaurant setLocked(String name) {
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findByName(name);
+        if (optionalRestaurant.isPresent()) {
+            Restaurant restaurant = optionalRestaurant.get();
+            restaurant.setLocked(true);
+            restaurantRepository.save(restaurant);
+            return restaurant;
+        }
+        return null;
     }
 
 

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class Notification {
 
     private String sender;
+    private String message;
     private String menu;
     private String driver;
     private String restaurant;

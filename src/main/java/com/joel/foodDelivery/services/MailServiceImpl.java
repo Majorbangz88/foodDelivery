@@ -4,10 +4,8 @@ import com.joel.foodDelivery.config.AppConfig;
 import com.joel.foodDelivery.dtos.requests.SendMailRequest;
 import com.joel.foodDelivery.dtos.requests.SendMailResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,8 +24,9 @@ public class MailServiceImpl implements MailService{
     @Override
     public SendMailResponse sendMail(SendMailRequest request) {
         HttpHeaders headers = addRequestHeaders();
+//        RequestEntity<SendMailRequest> requestEntity = new RequestEntity<>(request, headers, POST, URI.create(appConfig.getMailServiceUrl()));
         RequestEntity<SendMailRequest> requestEntity = new RequestEntity<>(request, headers, POST, URI.create(appConfig.getMailServiceUrl()));
-        ResponseEntity<SendMailResponse> mailResponse = restTemplate.postForEntity(appConfig.getMailServiceUrl(), requestEntity, SendMailResponse.class);
+        ResponseEntity<SendMailResponse> mailResponse = restTemplate.postForEntity(appConfig.getMailServiceUrl(),requestEntity, SendMailResponse.class);
         return buildSendMailResponse(mailResponse);
     }
 
@@ -44,7 +43,7 @@ public class MailServiceImpl implements MailService{
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
         headers.setAccept(List.of(APPLICATION_JSON));
-        headers.set("api_key", appConfig.getMailApiKey());
+        headers.set("api-key", appConfig.getMailApiKey());
         return headers;
     }
 }

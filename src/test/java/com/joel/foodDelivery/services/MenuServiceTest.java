@@ -34,6 +34,16 @@ class MenuServiceTest {
 
         assertNotNull(menuResponse);
 
+        CreateMenuRequest menuRequested = new CreateMenuRequest();
+        menuRequested.setRestaurant("Food 0'clock");
+        menuRequested.setItemName("Abacha n'akpaka");
+        menuRequested.setPrice(500.00);
+        menuRequested.setAvailability(true);
+
+        CreateMenuResponse menuResponses = menuService.createMenu(menuRequested);
+
+        assertNotNull(menuResponses);
+
         CreateMenuRequest menuRequest1 = new CreateMenuRequest();
         menuRequest1.setRestaurant("Dolphins");
         menuRequest1.setItemName("Rice & Beans");
@@ -54,6 +64,6 @@ class MenuServiceTest {
 
         assertNotNull(menuResponse2);
 
-        assertThat(menuService.count(), is(3L));
+        assertThat(menuService.count(), is(4L));
     }
 }

@@ -26,9 +26,9 @@ class MailServiceTest {
         assertEquals(201, mailResponse.getStatusCode());
     }
 
-    private SendMailRequest buildMailRequest() {
+    private static SendMailRequest buildMailRequest() {
         SendMailRequest mailRequest = new SendMailRequest();
-        Sender sender = new Sender("food 0'clock", "joellegend582@gmail.com");
+        Sender sender = new Sender("food clock", "joel@gmail.com");
         List<Recipient> recipients = List.of(
                 new Recipient("Joel", "joellegend8@gmail.com"));
 

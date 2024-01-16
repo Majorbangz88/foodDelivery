@@ -64,19 +64,20 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public Customer isLocked(LoginRequest loginRequest) {
+    public Customer unlock(LoginRequest loginRequest) {
         validateIsNOTNullUsernameOrPassword(loginRequest);
         Optional<Customer> customer = customerRepository.findByUsernameAndPassword(
                 loginRequest.getUsername(), loginRequest.getPassword());
         if (customer.isEmpty())
             throw new UserNotFoundException("This user does not exist");
-        if (customer.get().getUsername().equals(loginRequest.getUsername())
-                && customer.get().getPassword().equals(loginRequest.getPassword()))
-            customer.get().setLocked(false);
+        Customer oldCustomer = customer.get();
+        if (oldCustomer.getUsername().equals(loginRequest.getUsername())
+                && oldCustomer.getPassword().equals(loginRequest.getPassword()))
+            oldCustomer.setLocked(false);
 
-        customerRepository.save(customer.get());
+        customerRepository.save(oldCustomer);
 
-        return customer.get();
+        return oldCustomer;
     }
 
     @Override
@@ -89,7 +90,7 @@ public class CustomerServiceImpl implements CustomerService{
             customerRepository.save(customer);
             return customer;
         }
-        throw new CustomerNotfoundException("not found");
+        return null;
     }
 
     @Override
