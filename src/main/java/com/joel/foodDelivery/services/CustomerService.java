@@ -28,4 +28,8 @@ public interface CustomerService {
     Order cancelOrder(PlaceOrderRequest orderRequest);
 
     List<Order> findAllTransactionHistory();
+
+    Optional<Customer> findCustomerBy(String customerId);
+
+    FeedbackResponse provideFeedback(FeedbackRequest feedbackRequest);
 }

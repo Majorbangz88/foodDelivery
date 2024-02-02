@@ -22,8 +22,8 @@ public class NotificationServiceImpl implements NotificationService{
     public Notification sendNotification(PlaceOrderRequest request) {
         Notification notification = new Notification();
         notification.setSender(request.getUsername());
-        notification.setRestaurant(request.getRestaurantName());
-        notification.setMenu(request.getMenu());
+        notification.setRestaurant(request.getRestaurants());
+        notification.setMenu(request.getItems());
         notification.setDriver(request.getDriver());
         notification.setStatus(Status.NEW);
         notification.setDateTime(request.getTimeStamp());
@@ -36,6 +36,11 @@ public class NotificationServiceImpl implements NotificationService{
     @Override
     public void deleteAll() {
         notificationRepository.deleteAll();
+    }
+
+    @Override
+    public Long count() {
+        return notificationRepository.count();
     }
 
     public List<Notification> receiveNotification(String restaurantName) {

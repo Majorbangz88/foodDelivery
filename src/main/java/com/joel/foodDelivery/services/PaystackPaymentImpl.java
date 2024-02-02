@@ -6,9 +6,11 @@ import com.joel.foodDelivery.dtos.requests.CreatePaymentResponse;
 import com.joel.foodDelivery.dtos.requests.PaystackTransactionVerificationResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,9 +25,10 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@Primary
 @AllArgsConstructor
 @Service
+@Component
+@Slf4j
 public class PaystackPaymentImpl implements PaymentService{
 
     private final PaymentConfig paymentConfig;
@@ -36,7 +39,9 @@ public class PaystackPaymentImpl implements PaymentService{
         String apiKey = paymentConfig.getPaystackApiKey();
         URI uri = create(paymentConfig.getPaystackApiUrl());
         RequestEntity<CreatePaymentRequest> data = buildPaymentRequest(paymentRequest, apiKey, uri);
+        log.info("req--> {} ", data);
         var response = restTemplate.postForEntity(uri, data, CreatePaymentResponse.class);
+        System.out.println(response);
         return response.getBody();
     }
 
@@ -52,7 +57,7 @@ public class PaystackPaymentImpl implements PaymentService{
 
     private RequestEntity<CreatePaymentRequest> buildPaymentRequest(CreatePaymentRequest paymentRequest, String apiKey, URI uri) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, BEARER.concat(apiKey));
+        headers.set(AUTHORIZATION, "Bearer ".concat(apiKey));
         headers.setContentType(APPLICATION_JSON);
         RequestEntity<CreatePaymentRequest> data =
                 new RequestEntity<>(paymentRequest, headers, POST, uri);

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+
 import static java.math.BigDecimal.TEN;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +21,7 @@ class PaymentServiceTest {
     @Test
     public void testPay() {
         CreatePaymentRequest paymentRequest = new CreatePaymentRequest();
-        paymentRequest.setAmount(TEN);
+        paymentRequest.setAmount(BigDecimal.valueOf(1000));
         paymentRequest.setEmail("johnlegend@gmail.com");
 
         var response = paymentService.pay(paymentRequest);

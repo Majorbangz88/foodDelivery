@@ -12,9 +12,9 @@ public class Notification {
 
     private String sender;
     private String message;
-    private List<String> menu;
+    private List<OrderItem> menu;
     private String driver;
-    private String restaurant;
+    private List<Restaurant> restaurant;
     private Status status;
     private LocalDateTime dateTime;
 

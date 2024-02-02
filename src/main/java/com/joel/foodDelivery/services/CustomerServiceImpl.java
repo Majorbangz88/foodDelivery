@@ -4,7 +4,6 @@ import com.joel.foodDelivery.data.models.Customer;
 import com.joel.foodDelivery.data.models.Order;
 import com.joel.foodDelivery.data.repositories.CustomerRepository;
 import com.joel.foodDelivery.dtos.requests.*;
-import com.joel.foodDelivery.exceptions.CustomerNotfoundException;
 import com.joel.foodDelivery.exceptions.EmailAndUsernameTakenException;
 import com.joel.foodDelivery.exceptions.UserNotFoundException;
 import com.joel.foodDelivery.exceptions.NullUsernameAndPasswordException;
@@ -25,6 +24,8 @@ public class CustomerServiceImpl implements CustomerService{
     private CustomerRepository customerRepository;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private FeedbackService feedbackService;
 
 //    @Autowired
 //    public void setUp(OrderService orderService){
@@ -34,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public Customer registerCustomer(CustomerRegistrationRequest registrationRequest) {
         validateIsNotNullEmailOrPassword(registrationRequest);
-        validateEmailAndUsername(registrationRequest.getEmail(), registrationRequest.getUsername());
+        validateEmailAndUsername(registrationRequest.getEmail(), registrationRequest.getUsername(), registrationRequest.getPhoneNumber());
         Customer customer = map(registrationRequest);
         customerRepository.save(customer);
         return customer;
@@ -47,10 +48,10 @@ public class CustomerServiceImpl implements CustomerService{
             throw new UserNotFoundException("Invalid username or password");
     }
 
-    private void validateEmailAndUsername(String email, String username) {
-        Optional<Customer> customer = customerRepository.findByEmailAndUsername(email, username);
+    private void validateEmailAndUsername(String email, String username, String phoneNumber) {
+        Optional<Customer> customer = customerRepository.findByEmailAndUsernameAndPhoneNumber(email, username, phoneNumber);
         if (customer.isPresent())
-            throw new EmailAndUsernameTakenException("Email or username taken");
+            throw new EmailAndUsernameTakenException("This user exists");
     }
 
     @Override
@@ -116,6 +117,16 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public List<Order> findAllTransactionHistory() {
         return orderService.displayOrderHistory();
+    }
+
+    @Override
+    public Optional<Customer> findCustomerBy(String customerId) {
+        return customerRepository.findById(customerId);
+    }
+
+    @Override
+    public FeedbackResponse provideFeedback(FeedbackRequest feedbackRequest) {
+        return feedbackService.provideFeedback(feedbackRequest);
     }
 
     private void validateIsNOTNullUsernameOrPassword(LoginRequest loginRequest) {

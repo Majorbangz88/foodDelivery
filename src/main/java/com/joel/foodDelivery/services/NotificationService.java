@@ -8,4 +8,6 @@ public interface NotificationService {
     Notification sendNotification(PlaceOrderRequest request);
 
     void deleteAll();
+
+    Long count();
 }

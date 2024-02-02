@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
+
 @Data
 @Document("Menu")
 @AllArgsConstructor
@@ -17,7 +19,7 @@ public class Menu {
     private String Id;
     private String restaurant;
     private String itemName;
-    private double price;
+    private BigDecimal price;
     private boolean availability;
 }
 

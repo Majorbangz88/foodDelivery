@@ -1,14 +1,11 @@
 package com.joel.foodDelivery.services;
 
-import com.joel.foodDelivery.data.models.Customer;
 import com.joel.foodDelivery.data.models.Order;
 import com.joel.foodDelivery.dtos.requests.PlaceOrderRequest;
 import com.joel.foodDelivery.dtos.requests.PlaceOrderResponse;
 import com.joel.foodDelivery.dtos.requests.UpdateOrderRequest;
-import com.joel.foodDelivery.dtos.requests.UpdateOrderResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface OrderService {
     long count();
@@ -26,4 +23,8 @@ public interface OrderService {
     Order cancelOrder(PlaceOrderRequest orderRequest);
 
     List<Order> displayOrderHistory();
+
+//    Order findOrderByCustomerName(String customerName);
+
+    double calculateTotal(List<PlaceOrderRequest> orderRequests);
 }

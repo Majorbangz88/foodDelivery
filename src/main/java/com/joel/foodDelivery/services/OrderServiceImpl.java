@@ -7,6 +7,7 @@ import com.joel.foodDelivery.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,21 +50,22 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public PlaceOrderResponse createOrder(PlaceOrderRequest orderRequest) {
         Customer customer = getCustomer(orderRequest.getUsername());
-        List<String> allMenuOrders = orderRequest.getMenu();
+        List<OrderItem> allMenuOrders = orderRequest.getItems();
         List<Menu> allMenu = new ArrayList<>();
         allMenuOrders.forEach((order) -> {
             Menu menu = getMenu(order);
             allMenu.add(menu);
         });
 
-        Restaurant restaurant = getRestaurant(orderRequest.getRestaurantName());
+        List<Restaurant> restaurants = orderRequest.getRestaurants();
         Driver driver = getDriver(orderRequest.getDriverPhone());
 
         Order newOrder = new Order();
 
         newOrder.setCustomerName(customer.getUsername());
         newOrder.setEmail(customer.getEmail());
-        newOrder.setRestaurantName(restaurant.getName());
+        newOrder.setRestaurants(restaurants);
+//        newOrder.setRestaurantName(restaurant.getName());
         newOrder.setDriver(driver);
         newOrder.setMenu(allMenu);
         newOrder.setTimeStamp(orderRequest.getTimeStamp());
@@ -72,10 +74,10 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.save(newOrder);
 
         PlaceOrderResponse response = new PlaceOrderResponse();
-        response.setCustomer(newOrder.getCustomerName());
-        response.setRestaurant(newOrder.getRestaurantName());
-        response.setEmail(newOrder.getEmail());
-        response.setMenu(orderRequest.getMenu());
+        response.setRestaurants(orderRequest.getRestaurants());
+        response.setItems(orderRequest.getItems());
+        response.setUsername(orderRequest.getUsername());
+        response.setStatus(orderRequest.getStatus());
         response.setDriver(newOrder.getDriver().getName());
         response.setDriverPhone(newOrder.getDriver().getPhoneNumber());
         response.setTimeStamp(newOrder.getTimeStamp());
@@ -93,15 +95,15 @@ public class OrderServiceImpl implements OrderService{
         }
     }
 
-    private Restaurant getRestaurant(String restaurantName) throws RestaurantNotFoundException {
-        Optional<Restaurant> optionalRestaurant = restaurantService.findByName(restaurantName);
-        if (optionalRestaurant.isPresent())
-            return optionalRestaurant.get();
-        else throw new RestaurantNotFoundException("Restaurant does not exist");
-    }
+//    private List<Restaurant> getRestaurants(List<Restaurant> restaurants) throws RestaurantNotFoundException {
+//        Optional<List<Restaurant>> optionalRestaurants = restaurantService.findByName(restaurants.);
+//        if (optionalRestaurants.isPresent())
+//            return optionalRestaurants.get();
+//        else throw new RestaurantNotFoundException("Restaurant does not exist");
+//    }
 
-    private Menu getMenu(String menuName) {
-        Optional<Menu> optionalMenu = menuService.findByname(menuName);
+    private Menu getMenu(OrderItem items) {
+        Optional<Menu> optionalMenu = menuService.findByname(items.getMenu().getItemName());
         if ((optionalMenu.isPresent()))
             return optionalMenu.get();
         else throw new MenuNotFoundException("Menu not found");
@@ -116,7 +118,7 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public Order updateOrder(UpdateOrderRequest updateOrder) {
-        Optional<Order> optionalOrder = orderRepository.findByCustomerName(updateOrder.getName());
+        Optional<Order> optionalOrder = orderRepository.findOrderByCustomerName(updateOrder.getName());
         if (optionalOrder.isEmpty())
             throw new OrderNotExistException("Order not found");
         optionalOrder.get().setStatus(updateOrder.getStatus());
@@ -145,7 +147,7 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public Order cancelOrder(PlaceOrderRequest orderRequest) {
-        Optional<Order> optionalOrder = orderRepository.findByCustomerName(orderRequest.getUsername());
+        Optional<Order> optionalOrder = orderRepository.findOrderByCustomerName(orderRequest.getUsername());
         if (optionalOrder.isEmpty())
             throw new OrderNotExistException("Order not found");
         optionalOrder.get().setStatus(Status.CANCELED);
@@ -158,5 +160,26 @@ public class OrderServiceImpl implements OrderService{
     public List<Order> displayOrderHistory() {
         return orderRepository.findAll();
     }
+
+    @Override
+    public double calculateTotal(List<PlaceOrderRequest> orderRequests) {
+        double total = 0.0;
+
+        for (PlaceOrderRequest orderRequest : orderRequests) {
+            List<OrderItem> items = orderRequest.getItems();
+
+            for (OrderItem orderItem : items) {
+                BigDecimal price = orderItem.getMenu().getPrice();
+                int quantity = orderItem.getQuantity();
+
+                double result = price.doubleValue() * quantity;
+
+                total += result;
+            }
+        }
+
+        return total;
+    }
+
 
 }

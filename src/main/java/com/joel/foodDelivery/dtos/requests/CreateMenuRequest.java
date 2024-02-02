@@ -3,12 +3,14 @@ package com.joel.foodDelivery.dtos.requests;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class CreateMenuRequest {
 
     private String restaurant;
     private String itemName;
-    private double price;
+    private BigDecimal price;
     private boolean availability;
 }

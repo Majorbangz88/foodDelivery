@@ -1,19 +1,19 @@
 package com.joel.foodDelivery.dtos.requests;
 
 import com.joel.foodDelivery.data.models.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-public class PlaceOrderResponse {
-
-    private String username;
+@Getter
+@Setter
+public class AddToCartRequest {
+    private String customerName;
     private List<Restaurant> restaurants;
-    private String driver;
-    private String driverPhone;
-    private List<OrderItem> items;
+    private List<String> menu;
+    private int quantity;
     private Status status;
     private LocalDateTime timeStamp;
 }
